@@ -74,7 +74,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     skip1_transpose = tf.layers.conv2d_transpose(skip1, num_classes, 4, (2,2), padding='same', 
                                               kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
 
-    skip2 = tf.add(layer3_conv, skip1)
+    skip2 = tf.add(layer3_conv, skip1_transpose)
 
 
     final = tf.layers.conv2d_transpose(skip2, num_classes, 16, (8,8), padding='same', 
@@ -98,7 +98,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     logits = tf.reshape(nn_last_layer, (-1, num_classes))
     correct_label = tf.reshape(correct_label, (-1, num_classes))
 
-    cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2
+    cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits
                                        (logits= nn_last_layer, labels= correct_label))
 
     optimizer = tf.train.AdamOptimizer(learning_rate= learning_rate)
