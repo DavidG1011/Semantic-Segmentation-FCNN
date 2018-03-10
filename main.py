@@ -156,7 +156,7 @@ def run():
     image_shape = (160, 576)
     data_dir = './data'
     runs_dir = './runs'
-    model_dir = './data/model'
+    model_dir = './data/model/'
     tests.test_for_kitti_dataset(data_dir)
 
     # Download pretrained vgg model
@@ -177,7 +177,7 @@ def run():
 
         # TODO: Build NN using load_vgg, layers, and optimize function
 
-        epochs = 2;
+        epochs = 45;
         batch_size = 7;
 
 
@@ -201,7 +201,6 @@ def run():
 
         # TODO: Save inference data using helper.save_inference_samples
         #  helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
-
 
 
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
