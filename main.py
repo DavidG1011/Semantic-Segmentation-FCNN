@@ -156,6 +156,7 @@ def run():
     image_shape = (160, 576)
     data_dir = './data'
     runs_dir = './runs'
+    model_dir = './data/model'
     tests.test_for_kitti_dataset(data_dir)
 
     # Download pretrained vgg model
@@ -176,8 +177,8 @@ def run():
 
         # TODO: Build NN using load_vgg, layers, and optimize function
 
-        epochs = 50;
-        batch_size = 6;
+        epochs = 2;
+        batch_size = 7;
 
 
         correct_label = tf.placeholder(tf.int32, [None, None, None, num_classes])
@@ -191,11 +192,17 @@ def run():
 
         # TODO: Train NN using the train_nn function
 
+        tf_saver = tf.train.Saver()
+
         train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
                  correct_label, keep_prob, learning_rate)
 
+        model_save = tf_saver.save(sess, model_dir)
+
         # TODO: Save inference data using helper.save_inference_samples
         #  helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
+
+
 
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
 
