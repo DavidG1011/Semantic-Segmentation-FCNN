@@ -107,6 +107,8 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits
                                        (logits= nn_last_layer, labels= correct_label))
 
+    cross_entropy_loss += tf.losses.get_regularization_loss()
+
     optimizer = tf.train.AdamOptimizer(learning_rate= learning_rate)
 
     train_op = optimizer.minimize(cross_entropy_loss)
@@ -177,7 +179,7 @@ def run():
 
         # TODO: Build NN using load_vgg, layers, and optimize function
 
-        epochs = 45;
+        epochs = 50;
         batch_size = 7;
 
 
