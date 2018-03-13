@@ -210,7 +210,7 @@ def video_pipeline(input_vid, runs_dir, sess, image_shape,
 
             out.write(np.array(street_im))
 
-            print (str.replace("Frame count: ", count, '\n', '\r\n'))
+            print ("Frame count: ", count)
         
             count = count + 1
 
