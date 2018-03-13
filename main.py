@@ -5,7 +5,8 @@ import warnings
 from distutils.version import LooseVersion
 import project_tests as tests
 import cv2
-import scipy
+import scipy.misc
+import numpy as np
 
 
 # Check TensorFlow Version
