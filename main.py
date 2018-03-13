@@ -4,6 +4,7 @@ import helper
 import warnings
 from distutils.version import LooseVersion
 import project_tests as tests
+import cv2
 
 
 # Check TensorFlow Version
@@ -15,6 +16,18 @@ if not tf.test.gpu_device_name():
     warnings.warn('No GPU found. Please use a GPU to train your neural network.')
 else:
     print('Default GPU Device: {}'.format(tf.test.gpu_device_name()))
+
+
+################### Tunable Parameters ####################
+
+# Toggle if training or inferencing.
+training = False
+
+# Toggle if inferencing a video.
+video = True
+
+###########################################################
+
 
 
 def load_vgg(sess, vgg_path):
@@ -153,12 +166,45 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
 tests.test_train_nn(train_nn)
 
 
+def video_pipeline(input_vid, runs_dir, sess, image_shape, 
+                   logits, keep_prob):
+
+    capture = cv2.VideoCapture(input_vid)
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    out = cv2.VideoWriter(runs_dir + '/output.mp4',fourcc, 25.0, (image_shape[0],image_shape[1]))
+
+    while (True):
+
+        read_correct, frame =  cap.read()
+
+        if read_correct:
+            image = scipy.misc.imresize(frame, image_shape)
+            im_softmax = sess.run(
+                [tf.nn.softmax(logits)],
+                {keep_prob: 1.0, image_pl: [image]})
+            im_softmax = im_softmax[0][:, 1].reshape(image_shape[0], image_shape[1])
+            segmentation = (im_softmax > 0.5).reshape(image_shape[0], image_shape[1], 1)
+
+            mask = np.dot(segmentation, np.array([[0, 255, 0, 127]]))
+            mask = scipy.misc.toimage(mask, mode="RGBA")
+
+
+            street_im = scipy.misc.toimage(image)
+            street_im.paste(mask, box=None, mask=mask)
+
+            out.write(street_im)
+
+    cap.release()
+    out.release()
+    cv2.destroyAllWindows()
+
+
 def run():
     num_classes = 2
     image_shape = (160, 576)
     data_dir = './data'
     runs_dir = './runs'
-    model_dir = './data/model/'
+    model_dir = './data/model/model.ckpt'
     tests.test_for_kitti_dataset(data_dir)
 
     # Download pretrained vgg model
@@ -196,19 +242,31 @@ def run():
 
         tf_saver = tf.train.Saver()
 
-        train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
+        if training:
+
+            train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
                  correct_label, keep_prob, learning_rate)
 
-        model_save = tf_saver.save(sess, model_dir)
+            model_save = tf_saver.save(sess, model_dir)
 
-        # TODO: Save inference data using helper.save_inference_samples
-        #  helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
+            print ("Model saved to: ", model_dir)
+
+        else:
+
+            tf_saver.restore(sess, model_dir)
+
+            print ("Model restored from: ", model_dir) 
 
 
-        helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
+        if video:
 
-        # OPTIONAL: Apply the trained model to a video
+            input_vid = "./videoinput.mp4" 
 
+            video_pipeline(input_vid, runs_dir, sess, image_shape, logits, keep_prob)
+
+        else:
+
+            helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
 
 
 if __name__ == '__main__':
