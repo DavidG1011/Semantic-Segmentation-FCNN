@@ -201,6 +201,11 @@ def video_pipeline(input_vid, runs_dir, sess, image_shape,
         
             count = count + 1
 
+        else:
+            
+            break
+
+
     capture.release()
     out.release()
     cv2.destroyAllWindows()
