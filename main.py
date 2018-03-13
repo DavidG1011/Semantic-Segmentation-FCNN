@@ -194,7 +194,7 @@ def video_pipeline(input_vid, runs_dir, sess, image_shape,
             street_im = scipy.misc.toimage(image)
             street_im.paste(mask, box=None, mask=mask)
 
-            out.write(street_im)
+            out.write(np.array(street_im))
 
     capture.release()
     out.release()
