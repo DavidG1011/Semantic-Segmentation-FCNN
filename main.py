@@ -263,7 +263,7 @@ def run():
 
         # TODO: Train NN using the train_nn function
 
-        tf_saver = tf.train.Saver()
+        tf_saver = tf.train.Saver(max_to_keep=5)
 
         if training:
 
