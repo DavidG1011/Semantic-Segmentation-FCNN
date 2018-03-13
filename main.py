@@ -171,7 +171,7 @@ def video_pipeline(input_vid, runs_dir, sess, image_shape,
 
     capture = cv2.VideoCapture(input_vid)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter(runs_dir + '/output.mp4',fourcc, 25.0, (image_shape[0],image_shape[1]))
+    out = cv2.VideoWriter(runs_dir + './output.mp4',fourcc, 25.0, (image_shape[0],image_shape[1]))
 
     while (True):
 
