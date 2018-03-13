@@ -168,7 +168,7 @@ tests.test_train_nn(train_nn)
 
 
 def video_pipeline(input_vid, runs_dir, sess, image_shape, 
-                   logits, keep_prob):
+                   logits, keep_prob, image_pl):
 
     capture = cv2.VideoCapture(input_vid)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -263,7 +263,7 @@ def run():
 
             input_vid = "./videoinput.mp4" 
 
-            video_pipeline(input_vid, runs_dir, sess, image_shape, logits, keep_prob)
+            video_pipeline(input_vid, runs_dir, sess, image_shape, logits, keep_prob, input_image)
 
         else:
 
