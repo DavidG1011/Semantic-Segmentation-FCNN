@@ -1,2 +1,4 @@
-data/
+data/data_road/
+data/model/
+data/vgg/
 __pycache__
