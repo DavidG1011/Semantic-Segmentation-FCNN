@@ -174,6 +174,7 @@ def video_pipeline(input_vid, runs_dir, sess, image_shape,
     capture = cv2.VideoCapture(input_vid)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     out = cv2.VideoWriter(runs_dir + './output.avi',fourcc, 25.0, (image_shape[0],image_shape[1]))
+    count = 0
 
     while (True):
 
@@ -195,6 +196,10 @@ def video_pipeline(input_vid, runs_dir, sess, image_shape,
             street_im.paste(mask, box=None, mask=mask)
 
             out.write(np.array(street_im))
+
+            print ("Image count: ", count)
+        
+            count = count + 1
 
     capture.release()
     out.release()
