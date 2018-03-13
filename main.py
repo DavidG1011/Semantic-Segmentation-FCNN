@@ -34,6 +34,12 @@ regularizer = 1e-3
 # Kernel initializer value for nn layers. Defines how random starting weights are set.
 initializer = 0.01
 
+# Amount of epochs desired.
+epochs = 50;
+
+# Size of batches desired.
+batch_size = 10;
+
 #########################################################################################
 
 
@@ -243,9 +249,8 @@ def run():
 
         # TODO: Build NN using load_vgg, layers, and optimize function
 
-        epochs = 50;
-        batch_size = 10;
-
+        # epochs = 50;
+        # batch_size = 10;
 
         correct_label = tf.placeholder(tf.int32, [None, None, None, num_classes])
         learning_rate = tf.placeholder(tf.float32)
