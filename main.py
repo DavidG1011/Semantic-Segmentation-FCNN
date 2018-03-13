@@ -20,7 +20,7 @@ else:
     print('Default GPU Device: {}'.format(tf.test.gpu_device_name()))
 
 
-################### Tunable Parameters ####################
+################### Tunable Parameters ##################################################
 
 # Toggle if training or inferencing.
 training = False
@@ -28,7 +28,13 @@ training = False
 # Toggle if inferencing a video.
 video = True
 
-###########################################################
+# Kernel regularizer value for nn layers.
+regularizer = 1e-3
+
+# Kernel initializer value for nn layers. Defines how random starting weights are set.
+initializer = 0.01
+
+#########################################################################################
 
 
 
@@ -72,34 +78,34 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     """
     # TODO: Implement function
     layer7_conv = tf.layers.conv2d(vgg_layer7_out, num_classes, 1, (1,1), padding='same',
-                                   kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
-                                   kernel_initializer= tf.random_normal_initializer(stddev=0.01))
+                                   kernel_regularizer=tf.contrib.layers.l2_regularizer(regularizer),
+                                   kernel_initializer= tf.random_normal_initializer(stddev=initializer))
 
     layer7_transpose = tf.layers.conv2d_transpose(layer7_conv, num_classes, 4, (2,2), padding='same', 
-                                               kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3),
-                                               kernel_initializer= tf.random_normal_initializer(stddev=0.01))
+                                               kernel_regularizer= tf.contrib.layers.l2_regularizer(regularizer),
+                                               kernel_initializer= tf.random_normal_initializer(stddev=initializer))
 
     layer4_conv = tf.layers.conv2d(vgg_layer4_out, num_classes, 1, (1,1), padding='same',
-                                   kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
-                                   kernel_initializer= tf.random_normal_initializer(stddev=0.01))
+                                   kernel_regularizer=tf.contrib.layers.l2_regularizer(regularizer),
+                                   kernel_initializer= tf.random_normal_initializer(stddev=initializer))
 
     skip1 = tf.add(layer7_transpose, layer4_conv)
 
 
     layer3_conv = tf.layers.conv2d(vgg_layer3_out, num_classes, 1, (1,1), padding='same',
-                                   kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
-                                   kernel_initializer= tf.random_normal_initializer(stddev=0.01))
+                                   kernel_regularizer=tf.contrib.layers.l2_regularizer(regularizer),
+                                   kernel_initializer= tf.random_normal_initializer(stddev=initializer))
 
     skip1_transpose = tf.layers.conv2d_transpose(skip1, num_classes, 4, (2,2), padding='same', 
-                                              kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
-                                              kernel_initializer= tf.random_normal_initializer(stddev=0.01))
+                                              kernel_regularizer=tf.contrib.layers.l2_regularizer(regularizer),
+                                              kernel_initializer= tf.random_normal_initializer(stddev=initializer))
 
     skip2 = tf.add(layer3_conv, skip1_transpose)
 
 
     final = tf.layers.conv2d_transpose(skip2, num_classes, 16, (8,8), padding='same', 
-                                       kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
-                                       kernel_initializer= tf.random_normal_initializer(stddev=0.01))
+                                       kernel_regularizer=tf.contrib.layers.l2_regularizer(regularizer),
+                                       kernel_initializer= tf.random_normal_initializer(stddev=initializer))
 
     return final
 
@@ -122,7 +128,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits
                                        (logits= nn_last_layer, labels= correct_label))
 
-    #cross_entropy_loss += tf.losses.get_regularization_loss()
+    cross_entropy_loss = tf.add(cross_entropy_loss, tf.losses.get_regularization_loss())
 
     optimizer = tf.train.AdamOptimizer(learning_rate= learning_rate)
 
@@ -172,8 +178,9 @@ def video_pipeline(input_vid, runs_dir, sess, image_shape,
                    logits, keep_prob, image_pl):
 
     capture = cv2.VideoCapture(input_vid)
+    fps = capture.get(cv2.CAP_PROP_FPS)
     fourcc = cv2.VideoWriter_fourcc(*'MPEG')
-    out = cv2.VideoWriter(runs_dir + '/output.mp4',fourcc, 25.0, (image_shape[1],image_shape[0]))
+    out = cv2.VideoWriter(runs_dir + '/output.mp4',fourcc, fps, (image_shape[1],image_shape[0]))
     count = 0
 
     while (True):
@@ -197,14 +204,13 @@ def video_pipeline(input_vid, runs_dir, sess, image_shape,
 
             out.write(np.array(street_im))
 
-            print ("Image count: ", count)
+            print (str.replace("Frame count: ", count, '\n', '\r\n'))
         
             count = count + 1
 
         else:
 
             break
-
 
     capture.release()
     out.release()
