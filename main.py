@@ -171,11 +171,11 @@ def video_pipeline(input_vid, runs_dir, sess, image_shape,
 
     capture = cv2.VideoCapture(input_vid)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter(runs_dir + './output.mp4',fourcc, 25.0, (image_shape[0],image_shape[1]))
+    out = cv2.VideoWriter(runs_dir + './output.avi',fourcc, 25.0, (image_shape[0],image_shape[1]))
 
     while (True):
 
-        read_correct, frame =  cap.read()
+        read_correct, frame =  capture.read()
 
         if read_correct:
             image = scipy.misc.imresize(frame, image_shape)
@@ -194,7 +194,7 @@ def video_pipeline(input_vid, runs_dir, sess, image_shape,
 
             out.write(street_im)
 
-    cap.release()
+    capture.release()
     out.release()
     cv2.destroyAllWindows()
 
