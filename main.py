@@ -23,10 +23,10 @@ else:
 ################### Tunable Parameters ##################################################
 
 # Toggle if training or inferencing.
-training = False
+training = True
 
 # Toggle if inferencing a video.
-video = True
+video = False
 
 # Kernel regularizer value for nn layers.
 regularizer = 1e-3
