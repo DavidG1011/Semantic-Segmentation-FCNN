@@ -35,7 +35,7 @@ regularizer = 1e-3
 initializer = 0.01
 
 # Desired epoch amount.
-epochs = 30;
+epochs = 50;
 
 # Desired batch size.
 batch_size = 10;
@@ -141,7 +141,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits
                                        (logits= nn_last_layer, labels= correct_label))
 
-    cross_entropy_loss = tf.add(cross_entropy_loss, tf.losses.get_regularization_loss())
+    #cross_entropy_loss = tf.add(cross_entropy_loss, tf.losses.get_regularization_loss())
 
     optimizer = tf.train.AdamOptimizer(learning_rate= learning_rate)
 
