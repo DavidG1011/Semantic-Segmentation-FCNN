@@ -34,10 +34,10 @@ regularizer = 1e-3
 # Kernel initializer value for nn layers. Defines how random starting weights are set.
 initializer = 0.01
 
-# Amount of epochs desired.
-epochs = 50;
+# Desired epoch amount.
+epochs = 30;
 
-# Size of batches desired.
+# Desired batch size.
 batch_size = 10;
 
 #########################################################################################
@@ -82,7 +82,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :param num_classes: Number of classes to classify
     :return: The Tensor for the last layer of output
     """
-    # TODO: Implement function
+
     layer7_conv = tf.layers.conv2d(vgg_layer7_out, num_classes, 1, (1,1), padding='same',
                                    kernel_regularizer=tf.contrib.layers.l2_regularizer(regularizer),
                                    kernel_initializer= tf.random_normal_initializer(stddev=initializer))
@@ -91,14 +91,20 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
                                                kernel_regularizer= tf.contrib.layers.l2_regularizer(regularizer),
                                                kernel_initializer= tf.random_normal_initializer(stddev=initializer))
 
-    layer4_conv = tf.layers.conv2d(vgg_layer4_out, num_classes, 1, (1,1), padding='same',
+    scale_4 = tf.multiply(vgg_layer4_out, 0.0001)
+
+
+    layer4_conv = tf.layers.conv2d(scale_4, num_classes, 1, (1,1), padding='same',
                                    kernel_regularizer=tf.contrib.layers.l2_regularizer(regularizer),
                                    kernel_initializer= tf.random_normal_initializer(stddev=initializer))
 
     skip1 = tf.add(layer7_transpose, layer4_conv)
 
 
-    layer3_conv = tf.layers.conv2d(vgg_layer3_out, num_classes, 1, (1,1), padding='same',
+    scale_3 = tf.multiply(vgg_layer3_out, 0.01)
+
+
+    layer3_conv = tf.layers.conv2d(scale_3, num_classes, 1, (1,1), padding='same',
                                    kernel_regularizer=tf.contrib.layers.l2_regularizer(regularizer),
                                    kernel_initializer= tf.random_normal_initializer(stddev=initializer))
 
@@ -114,6 +120,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
                                        kernel_initializer= tf.random_normal_initializer(stddev=initializer))
 
     return final
+
 
 tests.test_layers(layers)
 
@@ -134,7 +141,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits
                                        (logits= nn_last_layer, labels= correct_label))
 
-    #cross_entropy_loss = tf.add(cross_entropy_loss, tf.losses.get_regularization_loss())
+    cross_entropy_loss = tf.add(cross_entropy_loss, tf.losses.get_regularization_loss())
 
     optimizer = tf.train.AdamOptimizer(learning_rate= learning_rate)
 
