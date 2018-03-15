@@ -28,8 +28,8 @@ training = True
 # Toggle if inferencing a video.
 video = False
 
-# Toggle model saving.
-save = True
+# Toggle model saving if training a model.
+save_if_training = True
 
 # Kernel regularizer value for nn layers.
 regularizer = 1e-3
@@ -288,7 +288,7 @@ def run():
             train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
                  correct_label, keep_prob, learning_rate)
 
-            if save:
+            if save_if_training:
                 model_save = tf_saver.save(sess, model_dir)
                 print ("Model saved to: ", model_dir)
 
