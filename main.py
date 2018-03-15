@@ -28,6 +28,9 @@ training = True
 # Toggle if inferencing a video.
 video = False
 
+# Toggle model saving.
+save = True
+
 # Kernel regularizer value for nn layers.
 regularizer = 1e-3
 
@@ -35,10 +38,16 @@ regularizer = 1e-3
 initializer = 0.01
 
 # Desired epoch amount.
-epochs = 50;
+epochs = 30;
 
 # Desired batch size.
 batch_size = 10;
+
+# Probability of keeping data.
+keep_p = 0.5
+
+# Learning rate for the model.
+learn_rate = 0.0009
 
 #########################################################################################
 
@@ -153,7 +162,7 @@ tests.test_optimize(optimize)
 
 
 def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
-             correct_label, keep_prob, learning_rate):
+             correct_label, keep_prob, learning_rate, iou_obj):
     """
     Train neural network and print out the loss during training.
     :param sess: TF Session
@@ -172,17 +181,19 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     sess.run(tf.global_variables_initializer())
 
     for n in range(epochs):
+
         print ("Epoch: ", n ,"/", epochs - 1)
         for image, label in get_batches_fn(batch_size):
             _, loss = sess.run([train_op, cross_entropy_loss],
                                feed_dict={input_image: image,
                                           correct_label: label,
-                                          keep_prob: 0.5,
-                                          learning_rate: 0.0009
+                                          keep_prob: keep_p,
+                                          learning_rate: learn_rate
                                          })
-            print (loss)
+        
+            print ("Loss: ", loss)
 
-    print ("Done.")
+    print ("Finished training.")
 
 tests.test_train_nn(train_nn)
 
@@ -277,9 +288,9 @@ def run():
             train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
                  correct_label, keep_prob, learning_rate)
 
-            model_save = tf_saver.save(sess, model_dir)
-
-            print ("Model saved to: ", model_dir)
+            if save:
+                model_save = tf_saver.save(sess, model_dir)
+                print ("Model saved to: ", model_dir)
 
         else:
 
