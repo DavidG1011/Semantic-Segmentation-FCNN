@@ -290,13 +290,13 @@ def run():
 
             if save_if_training:
                 model_save = tf_saver.save(sess, model_dir)
-                print ("Model saved to: ", model_dir)
+                print ("Model saved to:", model_dir)
 
         else:
 
             tf_saver.restore(sess, model_dir)
 
-            print ("Model restored from: ", model_dir) 
+            print ("Model restored from:", model_dir) 
 
 
         if video:
