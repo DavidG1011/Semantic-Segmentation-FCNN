@@ -125,6 +125,7 @@ def test_train_nn(train_nn):
     correct_label = tf.placeholder(tf.float32, name='correct_label')
     keep_prob = tf.placeholder(tf.float32, name='keep_prob')
     learning_rate = tf.placeholder(tf.float32, name='learning_rate')
+    iou_obj = tf.placeholder(tf.float32, name='iou_obj')
     with tf.Session() as sess:
         parameters = {
             'sess': sess,
