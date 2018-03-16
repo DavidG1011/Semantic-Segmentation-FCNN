@@ -153,7 +153,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
 
     train_op = optimizer.minimize(cross_entropy_loss)
 
-    pred = tf.argmax(nn_last_layer, axis=3)
+    pred = tf.argmax(logits, 1)
 
     gt = correct_label[:, :, :, 0]
 
