@@ -40,6 +40,12 @@ epochs = 30;
 # Desired batch size.
 batch_size = 10;
 
+# Probability of keeping data
+keep_p = 0.5
+
+# Learning rate
+learn_rate = 0.0009
+
 #########################################################################################
 
 
@@ -147,13 +153,20 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
 
     train_op = optimizer.minimize(cross_entropy_loss)
 
-    return logits, train_op, cross_entropy_loss
+    pred = tf.argmax(nn_last_layer, axis=3)
+
+    gt = correct_label[:,:,:,0]
+
+    iou, iou_op = tf.metrics.mean_iou(ground_truth, prediction, num_classes)
+    iou_obj = (iou, iou_op)
+
+    return logits, train_op, cross_entropy_loss, iou_obj
 
 tests.test_optimize(optimize)
 
 
 def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
-             correct_label, keep_prob, learning_rate):
+             correct_label, keep_prob, learning_rate, iou_obj):
     """
     Train neural network and print out the loss during training.
     :param sess: TF Session
@@ -172,15 +185,31 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     sess.run(tf.global_variables_initializer())
 
     for n in range(epochs):
+
+        count = 0
+        total = 0.0
+
         print ("Epoch: ", n ,"/", epochs - 1)
         for image, label in get_batches_fn(batch_size):
             _, loss = sess.run([train_op, cross_entropy_loss],
                                feed_dict={input_image: image,
                                           correct_label: label,
-                                          keep_prob: 0.5,
-                                          learning_rate: 0.0009
+                                          keep_prob: keep_p,
+                                          learning_rate: learn_rate
                                          })
+            iou = iou_obj[0]
+            iou_op = iou_obj[1]
+            count += len(image)
+
+            sess.run(iou_op, feed_dict={input_image: image, 
+                                        correct_label: label, 
+                                        keep_prob: 1.0})
+
+            mean_iou = sess.run(iou)
+            total += mean_iou * len(image)
+
             print ("Loss:", loss)
+        print("IoU:", (total / count))
 
     print ("Done.")
 
@@ -261,7 +290,7 @@ def run():
 
         nn_last_layer = layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes)
 
-        logits, train_op, cross_entropy_loss = optimize(nn_last_layer, correct_label, learning_rate, num_classes)
+        logits, train_op, cross_entropy_loss, iou_obj = optimize(nn_last_layer, correct_label, learning_rate, num_classes)
 
         # TODO: Train NN using the train_nn function
 
@@ -270,7 +299,7 @@ def run():
         if training:
 
             train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
-                 correct_label, keep_prob, learning_rate)
+                 correct_label, keep_prob, learning_rate, iou_obj)
 
             model_save = tf_saver.save(sess, model_dir)
 
