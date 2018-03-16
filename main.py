@@ -35,7 +35,7 @@ regularizer = 1e-3
 initializer = 0.01
 
 # Desired epoch amount.
-epochs = 30;
+epochs = 50;
 
 # Desired batch size.
 batch_size = 10;
