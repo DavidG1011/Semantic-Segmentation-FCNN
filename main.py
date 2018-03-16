@@ -157,7 +157,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
 
     gt = correct_label[:,:,:,0]
 
-    iou, iou_op = tf.metrics.mean_iou(ground_truth, prediction, num_classes)
+    iou, iou_op = tf.metrics.mean_iou(gt, pred, num_classes)
     iou_obj = (iou, iou_op)
 
     return logits, train_op, cross_entropy_loss, iou_obj
