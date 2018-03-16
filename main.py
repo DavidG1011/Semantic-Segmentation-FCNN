@@ -145,7 +145,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     label = tf.reshape(correct_label, (-1, num_classes))
 
     cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits
-                                       (logits= nn_last_layer, labels= label))
+                                       (logits= logits, labels= label))
 
     cross_entropy_loss = tf.add(cross_entropy_loss, tf.losses.get_regularization_loss())
 
@@ -155,7 +155,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
 
     pred = tf.argmax(nn_last_layer, axis=3)
 
-    gt = correct_label[:,:,:,0]
+    gt = correct_label[:, :, :, 0]
 
     iou, iou_op = tf.metrics.mean_iou(gt, pred, num_classes)
     iou_obj = (iou, iou_op)
@@ -183,6 +183,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     # TODO: Implement function
 
     sess.run(tf.global_variables_initializer())
+    sess.run(tf.local_variables_initializer())
 
     for n in range(epochs):
 
@@ -210,7 +211,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                 total += mean_iou * len(image)
 
             print ("Loss:", loss)
-            
+
         if not_testing:
             print("IoU:", (total / count))
 
@@ -294,8 +295,6 @@ def run():
         nn_last_layer = layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes)
 
         logits, train_op, cross_entropy_loss, iou_obj = optimize(nn_last_layer, correct_label, learning_rate, num_classes)
-
-        # TODO: Train NN using the train_nn function
 
         tf_saver = tf.train.Saver(max_to_keep=5)
 
