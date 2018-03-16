@@ -155,7 +155,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
 
     pred = tf.argmax(logits, 1)
 
-    gt = correct_label[:, :, :, 0]
+    gt = tf.argmax(tf.reshape(correct_label, (-1, num_classes)), 1)
 
     iou, iou_op = tf.metrics.mean_iou(gt, pred, num_classes)
     iou_obj = (iou, iou_op)
