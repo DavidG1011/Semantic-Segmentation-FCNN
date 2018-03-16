@@ -166,7 +166,7 @@ tests.test_optimize(optimize)
 
 
 def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
-             correct_label, keep_prob, learning_rate, iou_obj):
+             correct_label, keep_prob, learning_rate, iou_obj, not_testing=True):
     """
     Train neural network and print out the loss during training.
     :param sess: TF Session
@@ -197,16 +197,17 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                                           keep_prob: keep_p,
                                           learning_rate: learn_rate
                                          })
-            iou = iou_obj[0]
-            iou_op = iou_obj[1]
-            count += len(image)
+            if not_testing:
+                iou = iou_obj[0]
+                iou_op = iou_obj[1]
+                count += len(image)
 
-            sess.run(iou_op, feed_dict={input_image: image, 
-                                        correct_label: label, 
-                                        keep_prob: 1.0})
+                sess.run(iou_op, feed_dict={input_image: image, 
+                                            correct_label: label, 
+                                            keep_prob: 1.0})
 
-            mean_iou = sess.run(iou)
-            total += mean_iou * len(image)
+                mean_iou = sess.run(iou)
+                total += mean_iou * len(image)
 
             print ("Loss:", loss)
         print("IoU:", (total / count))
