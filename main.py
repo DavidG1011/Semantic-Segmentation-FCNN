@@ -28,29 +28,17 @@ training = True
 # Toggle if inferencing a video.
 video = False
 
-# Toggle model saving if training a model.
-save_if_training = True
-
 # Kernel regularizer value for nn layers.
 regularizer = 1e-3
-
-# Toggle regularization
-regularize = False
 
 # Kernel initializer value for nn layers. Defines how random starting weights are set.
 initializer = 0.01
 
 # Desired epoch amount.
-epochs = 50;
+epochs = 30;
 
 # Desired batch size.
-batch_size = 5;
-
-# Probability of keeping data.
-# keep_p = 0.5
-
-# Learning rate for the model.
-# learn_rate = 0.0009
+batch_size = 10;
 
 #########################################################################################
 
@@ -152,9 +140,8 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
 
     cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits
                                        (logits= nn_last_layer, labels= correct_label))
-    if regularize:
 
-        cross_entropy_loss = tf.add(cross_entropy_loss, tf.losses.get_regularization_loss())
+    cross_entropy_loss = tf.add(cross_entropy_loss, tf.losses.get_regularization_loss())
 
     optimizer = tf.train.AdamOptimizer(learning_rate= learning_rate)
 
@@ -185,7 +172,6 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     sess.run(tf.global_variables_initializer())
 
     for n in range(epochs):
-
         print ("Epoch: ", n ,"/", epochs - 1)
         for image, label in get_batches_fn(batch_size):
             _, loss = sess.run([train_op, cross_entropy_loss],
@@ -194,10 +180,9 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                                           keep_prob: 0.5,
                                           learning_rate: 0.0009
                                          })
-        
-            print ("Loss: ", loss)
+            print ("Loss:", loss)
 
-    print ("Finished training.")
+    print ("Done.")
 
 tests.test_train_nn(train_nn)
 
@@ -287,15 +272,15 @@ def run():
             train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
                  correct_label, keep_prob, learning_rate)
 
-            if save_if_training:
-                model_save = tf_saver.save(sess, model_dir)
-                print ("Model saved to:", model_dir)
+            model_save = tf_saver.save(sess, model_dir)
+
+            print ("Model saved to: ", model_dir)
 
         else:
 
             tf_saver.restore(sess, model_dir)
 
-            print ("Model restored from:", model_dir) 
+            print ("Model restored from: ", model_dir) 
 
 
         if video:
