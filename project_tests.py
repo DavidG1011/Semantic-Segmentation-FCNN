@@ -136,7 +136,8 @@ def test_train_nn(train_nn):
             'input_image': input_image,
             'correct_label': correct_label,
             'keep_prob': keep_prob,
-            'learning_rate': learning_rate}
+            'learning_rate': learning_rate
+            'iou_obj': iou_obj}
         _prevent_print(train_nn, parameters)
 
 
