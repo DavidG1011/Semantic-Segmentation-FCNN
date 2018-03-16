@@ -210,7 +210,9 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                 total += mean_iou * len(image)
 
             print ("Loss:", loss)
-        print("IoU:", (total / count))
+            
+        if not_testing:
+            print("IoU:", (total / count))
 
     print ("Done.")
 
