@@ -180,10 +180,6 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param keep_prob: TF Placeholder for dropout keep probability
     :param learning_rate: TF Placeholder for learning rate
     """
-    # TODO: Implement function
-
-    sess.run(tf.global_variables_initializer())
-    sess.run(tf.local_variables_initializer())
 
     for n in range(epochs):
 
@@ -213,7 +209,9 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
             print ("Loss:", loss)
 
         if not_testing:
+            print ()
             print("IoU:", (total / count))
+            print ()
 
     print ("Done.")
 
@@ -295,6 +293,9 @@ def run():
         nn_last_layer = layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes)
 
         logits, train_op, cross_entropy_loss, iou_obj = optimize(nn_last_layer, correct_label, learning_rate, num_classes)
+
+        sess.run(tf.global_variables_initializer())
+        sess.run(tf.local_variables_initializer())
 
         tf_saver = tf.train.Saver(max_to_keep=5)
 
