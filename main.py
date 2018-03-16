@@ -34,6 +34,9 @@ save_if_training = True
 # Kernel regularizer value for nn layers.
 regularizer = 1e-3
 
+# Toggle regularization
+regularize = False
+
 # Kernel initializer value for nn layers. Defines how random starting weights are set.
 initializer = 0.01
 
@@ -41,13 +44,13 @@ initializer = 0.01
 epochs = 50;
 
 # Desired batch size.
-batch_size = 10;
+batch_size = 5;
 
 # Probability of keeping data.
-keep_p = 0.5
+# keep_p = 0.5
 
 # Learning rate for the model.
-learn_rate = 0.0009
+# learn_rate = 0.0009
 
 #########################################################################################
 
@@ -149,8 +152,9 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
 
     cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits
                                        (logits= nn_last_layer, labels= correct_label))
+    if regularize:
 
-    cross_entropy_loss = tf.add(cross_entropy_loss, tf.losses.get_regularization_loss())
+        cross_entropy_loss = tf.add(cross_entropy_loss, tf.losses.get_regularization_loss())
 
     optimizer = tf.train.AdamOptimizer(learning_rate= learning_rate)
 
@@ -187,8 +191,8 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
             _, loss = sess.run([train_op, cross_entropy_loss],
                                feed_dict={input_image: image,
                                           correct_label: label,
-                                          keep_prob: keep_p,
-                                          learning_rate: learn_rate
+                                          keep_prob: 0.5,
+                                          learning_rate: 0.0009
                                          })
         
             print ("Loss: ", loss)
@@ -264,11 +268,6 @@ def run():
 
         # OPTIONAL: Augment Images for better results
         #  https://datascience.stackexchange.com/questions/5224/how-to-prepare-augment-images-for-neural-network
-
-        # TODO: Build NN using load_vgg, layers, and optimize function
-
-        # epochs = 50;
-        # batch_size = 10;
 
         correct_label = tf.placeholder(tf.int32, [None, None, None, num_classes])
         learning_rate = tf.placeholder(tf.float32)
