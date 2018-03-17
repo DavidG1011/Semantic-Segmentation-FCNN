@@ -35,10 +35,10 @@ regularizer = 1e-3
 initializer = 0.01
 
 # Desired epoch amount.
-epochs = 28;
+epochs = 29;
 
 # Desired batch size.
-batch_size = 8;
+batch_size = 10;
 
 # Probability of keeping data
 keep_p = 0.5
