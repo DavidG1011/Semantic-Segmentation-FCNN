@@ -20,7 +20,7 @@ else:
     print('Default GPU Device: {}'.format(tf.test.gpu_device_name()))
 
 
-################### Tunable Parameters ##################################################
+####################################### Tunable Parameters ########################################
 
 # Toggle if training or inferencing.
 training = True
@@ -35,10 +35,10 @@ regularizer = 1e-3
 initializer = 0.01
 
 # Desired epoch amount.
-epochs = 50;
+epochs = 28;
 
 # Desired batch size.
-batch_size = 10;
+batch_size = 8;
 
 # Probability of keeping data
 keep_p = 0.5
@@ -46,7 +46,7 @@ keep_p = 0.5
 # Learning rate
 learn_rate = 0.0009
 
-#########################################################################################
+###################################################################################################
 
 
 
@@ -210,7 +210,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
 
         if not_testing:
             print ()
-            print("IoU:", (total / count))
+            print("Epoch", n, "IoU:", round((total / count), 5))
             print ()
 
     print ("Done.")
