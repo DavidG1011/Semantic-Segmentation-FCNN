@@ -149,9 +149,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
 
     cross_entropy_loss = tf.add(cross_entropy_loss, tf.losses.get_regularization_loss())
 
-    optimizer = tf.train.AdamOptimizer(learning_rate= learning_rate, 
-                                       beta1= 0.9,
-                                       beta2= 0.999)
+    optimizer = tf.train.AdamOptimizer(learning_rate= learning_rate)
 
     train_op = optimizer.minimize(cross_entropy_loss)
 
